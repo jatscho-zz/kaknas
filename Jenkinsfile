@@ -90,7 +90,7 @@ podTemplate(
         }
         container('docker') {
             stage('Build Docker container') {
-                sh("docker build -t eu.gcr.io/cognitedata-development/python-terraform:${gitCommit} .")
+                sh("docker build -t eu.gcr.io/cognitedata/python-terraform:${gitCommit} .")
             }
             if(env.BRANCH_NAME != "master") {
                 echo "Not in master branch. Will not push image. Skip."
@@ -98,7 +98,7 @@ podTemplate(
             }
             stage('Push Docker container') {
                 sh('#!/bin/sh -e\n' + 'docker login -u _json_key -p "$(cat /jenkins-docker-builder/credentials.json)" https://eu.gcr.io')
-                sh("docker push eu.gcr.io/cognitedata-development/python-terraform:${gitCommit}")
+                sh("docker push eu.gcr.io/cognitedata/python-terraform:${gitCommit}")
             }
         }
     }
