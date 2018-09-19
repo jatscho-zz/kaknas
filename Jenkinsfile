@@ -87,9 +87,6 @@ podTemplate(
                 junit(allowEmptyResults: true, testResults: '**/test-report.xml')
                 summarizeTestResults()
             }
-            stage("Upload report to codecov.io") {
-                sh('bash </codecov-script/upload-report.sh')
-            }
         }
         container('docker') {
             stage('Build Docker container') {
