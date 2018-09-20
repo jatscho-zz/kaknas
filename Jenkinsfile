@@ -28,9 +28,6 @@ podTemplate(
             resourceLimitCpu: '1000m',
             resourceLimitMemory: '500Mi',
             envVars: [envVar(key: 'PYTHONPATH', value: '/usr/local/bin'),
-                      secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-search-loader-python', secretKey: 'token.txt'),
-                      // /codecov-script/upload-report.sh relies on the following
-                      // Jenkins and Github environment variables.
                       envVar(key: 'JENKINS_URL', value: env.JENKINS_URL),
                       envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
                       envVar(key: 'BUILD_NUMBER', value: env.BUILD_NUMBER),
@@ -81,11 +78,6 @@ podTemplate(
                                 reporter: 'pylint'
                         ]]
                     ])
-            }
-            stage("Test") {
-                sh("pytest --cov-report xml:coverage.xml --cov cognite_search_loader --junitxml=test-report.xml || true")
-                junit(allowEmptyResults: true, testResults: '**/test-report.xml')
-                summarizeTestResults()
             }
         }
         container('docker') {
