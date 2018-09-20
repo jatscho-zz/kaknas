@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: python-terraform
+  namespace: default
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      labels:
+        app: python-terraform
+    spec:
+      containers:
+      - name: python-terraform
+        image: eu.gcr.io/cognitedata/python-terraform
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: python-terraform-github-token
+              key: token
+        ports:
+        - name: python-terraform
+          containerPort: 5000
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "500Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: python-terraform
+          initialDelaySeconds: 45
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: python-terraform
+          initialDelaySeconds: 60
+          periodSeconds: 5
