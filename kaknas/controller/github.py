@@ -1,15 +1,20 @@
 from kaknas.utils import utils
 from dulwich import porcelain
 from dulwich.repo import Repo
+import sys
+from kaknas import app
+import json
+import os
 
 def github():
-    rep = Repo('/Users/zachy/Desktop/terraform/')
+    git_folder = app.config['GIT_REPOS_FOLDER']
+    rep = Repo(git_folder + '/terraform/')
     all_files = porcelain.ls_files(rep)
     repowlkr = rep.get_walker(max_entries=1)
     lastfcommit = next(iter(repowlkr)).commit
     state_map = {}
     diff_module_map = {}
-    modules_repo = Repo('/Users/zachy/Desktop/terraform-cognite-modules')
+    modules_repo = Repo(git_folder + '/terraform-cognite-modules')
 
     utils.set_state_map(state_map, all_files, lastfcommit)
 
@@ -48,5 +53,7 @@ def github():
 
                 utils.set_diff_module_map(equinor_commit, greenfield_commit, folder_path,
                                     module, full_module_path, subpath_commits, diff_module_map)
-    print(diff_module_map)
-    return 'Check terminal for output'
+    #print(diff_module_map, file=sys.stdout)
+    return json.dumps(diff_module_map)
+    # app.logger.info(diff_module_map)
+    # return 'Check terminal'

@@ -5,3 +5,5 @@ testing.py
 /kaknas/utils/__pycache__
 /kaknas/controller/__pycache__
 /kaknas/database/__pycache__
+*.pem
+/repos

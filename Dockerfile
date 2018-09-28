@@ -1,17 +1,23 @@
-FROM python:3.4.9-wheezy
+FROM python:3.6-alpine
 
 MAINTAINER Zach Yam "zach.yam@cognite.com"
 
-RUN pip install requests
+#Install git
+RUN apk add curl git unzip bash openssh
 
-COPY /kaknas /app
+COPY kaknas /app/kaknas
 
-COPY . /app
+COPY manager.py /app/
+
+COPY setup.py /app/
+
+COPY requirements.txt /app/
 
 WORKDIR /app
 
+#Install requirements
 RUN pip install -r requirements.txt
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "manager.py runserver" ]
+CMD [ "manager.py", "runserver" ]

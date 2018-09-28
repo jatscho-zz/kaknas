@@ -1,9 +1,11 @@
 import re
 from dulwich.repo import Repo, Commit
 from dulwich.object_store import tree_lookup_path
+from kaknas import app
 
-rep = Repo('/Users/zachy/Desktop/terraform/')
-repowlkr = rep.get_walker(max_entries=1)
+def get_repo():
+    rep = Repo(app.config['GIT_REPOS_FOLDER'] + '/terraform')
+    return rep
 
 def get_file_contents(tree, path):
     """Gets contents of a file.
@@ -15,6 +17,7 @@ def get_file_contents(tree, path):
     Returns:
         A string containing all contents of the file
     """
+    rep = get_repo()
     (mode,sha) = tree_lookup_path(rep.get_object, tree, path)
     return rep[sha].data.decode()
 
@@ -206,14 +209,14 @@ def set_diff_module_map(equinor_commit, greenfield_commit, folder_path, module,
                 if commit.id == equinor_commit.id:
                     if first_commit is None:
                         first_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['first_commit'] = {'equinor': commit.id}
+                        diff_module_map[folder_path][module][full_module_path]['first_commit'] = {'equinor': commit.id.decode()}
                     else:
                         second_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['second_commit'] = {'equinor': commit.id}
+                        diff_module_map[folder_path][module][full_module_path]['second_commit'] = {'equinor': commit.id.decode()}
                 if  commit.id == greenfield_commit.id:
                     if first_commit is None:
                         first_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['first_commit'] = {'greenfield': commit.id}
+                        diff_module_map[folder_path][module][full_module_path]['first_commit'] = {'greenfield': commit.id.decode()}
                     else:
                         second_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['second_commit'] = {'greenfield': commit.id}
+                        diff_module_map[folder_path][module][full_module_path]['second_commit'] = {'greenfield': commit.id.decode()}

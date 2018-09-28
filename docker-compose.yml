@@ -6,5 +6,9 @@ services:
     ports:
      - "5000:5000"
     container_name: kaknas
+    environment:
+      - GIT_SSH_COMMAND=ssh -i /app/cognite-cicd.pem -o 'StrictHostKeyChecking no'
+      - GIT_REPOS_FOLDER=/app
     volumes:
      - .:/kaknas
+     - ./cognite-cicd.pem:/app/cognite-cicd.pem
