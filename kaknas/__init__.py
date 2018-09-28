@@ -39,6 +39,6 @@ def main(app):
             app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules')
     manager = Manager(app)
     manager.add_command('db', MigrateCommand)
-    manager.add_command('runserver', Server(host='0.0.0.0', port=5000))
+    manager.add_command('runserver', Server(host='0.0.0.0', port=5000, threaded=True))
 
     manager.run()
