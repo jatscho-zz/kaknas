@@ -1,7 +1,6 @@
 import os
 import importlib
 from flask import Flask
-from flask_script import Manager
 from flask_script import Manager, Server
 from flask_migrate import Migrate, MigrateCommand
 import subprocess
