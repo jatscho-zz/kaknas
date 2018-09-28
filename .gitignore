@@ -1,3 +1,4 @@
 .idea/
 secrets.yaml
 testing.py
+/kaknas/__pycache__
