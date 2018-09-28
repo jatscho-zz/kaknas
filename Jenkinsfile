@@ -82,15 +82,15 @@ podTemplate(
                         ]]
                     ])
             }
-            stage("Test") {
-                sh("pytest --cov-report xml:coverage.xml --cov cognite_search_loader --junitxml=test-report.xml || true")
-                junit(allowEmptyResults: true, testResults: '**/test-report.xml')
-                summarizeTestResults()
-            }
+            // stage("Test") {
+            //     sh("pytest --cov-report xml:coverage.xml --cov cognite_search_loader --junitxml=test-report.xml || true")
+            //     junit(allowEmptyResults: true, testResults: '**/test-report.xml')
+            //     summarizeTestResults()
+            // }
         }
         container('docker') {
             stage('Build Docker container') {
-                sh("docker build -t eu.gcr.io/cognitedata/python-terraform:${gitCommit} .")
+                sh("docker build -t eu.gcr.io/cognitedata/kaknas:${gitCommit} .")
             }
             if(env.BRANCH_NAME != "master") {
                 echo "Not in master branch. Will not push image. Skip."
@@ -98,7 +98,7 @@ podTemplate(
             }
             stage('Push Docker container') {
                 sh('#!/bin/sh -e\n' + 'docker login -u _json_key -p "$(cat /jenkins-docker-builder/credentials.json)" https://eu.gcr.io')
-                sh("docker push eu.gcr.io/cognitedata/python-terraform:${gitCommit}")
+                sh("docker push eu.gcr.io/cognitedata/kaknas:${gitCommit}")
             }
         }
     }

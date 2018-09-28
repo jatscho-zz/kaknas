@@ -5,6 +5,6 @@ services:
     build: .
     ports:
      - "5000:5000"
-    container_name: python_terraform
+    container_name: kaknas
     volumes:
-     - .:/python_terraform
+     - .:/kaknas

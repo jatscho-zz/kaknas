@@ -4,6 +4,8 @@ MAINTAINER Zach Yam "zach.yam@cognite.com"
 
 RUN pip install requests
 
+COPY /kaknas /app
+
 COPY . /app
 
 WORKDIR /app
@@ -12,4 +14,4 @@ RUN pip install -r requirements.txt
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "app.py" ]
+CMD [ "manager.py runserver" ]
