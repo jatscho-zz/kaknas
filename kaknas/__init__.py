@@ -1,6 +1,7 @@
 import os
 import importlib
 from flask import Flask
+from flask_caching import Cache
 from flask_script import Manager, Server
 from flask_migrate import Migrate, MigrateCommand
 import subprocess
@@ -17,6 +18,7 @@ def git(*args):
     return subprocess.check_call(['git'] + list(args))
 
 app = Flask(__name__, static_url_path='/static')
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 if os.environ.get('GIT_REPOS_FOLDER') is not None:
     app.config['GIT_REPOS_FOLDER'] = os.environ.get('GIT_REPOS_FOLDER')

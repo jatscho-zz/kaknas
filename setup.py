@@ -37,9 +37,9 @@ def install():
             'Flask-Script==2.0.5',
             'Flask-SQLAlchemy==2.1',
             'mysqlclient==1.3.9',
-            'requests == 2.19.1',
+            'requests==2.19.1',
             'dulwich --global-option=--pure',
-
+            'Flask-Caching=1.4.0'
         ],
     )
 

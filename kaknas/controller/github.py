@@ -3,18 +3,30 @@ from dulwich import porcelain
 from dulwich.repo import Repo
 import sys
 from kaknas import app
+from kaknas import cache
 import json
 import os
 
 def github():
+    # get latest commits of repos
     git_folder = app.config['GIT_REPOS_FOLDER']
     rep = Repo(git_folder + '/terraform/')
-    all_files = porcelain.ls_files(rep)
     repowlkr = rep.get_walker(max_entries=1)
     lastfcommit = next(iter(repowlkr)).commit
+
+    modules_repo = Repo(git_folder + '/terraform-cognite-modules')
+    repowlkr_modules = modules_repo.get_walker(max_entries=1)
+    lastfcommit_modules = next(iter(repowlkr_modules)).commit
+
+    if cache.get(lastfcommit) and cache.get(lastfcommit_modules) and cache.get('diff_module_map') is not None:
+        app.logger.info('cache hit')
+        return json.dumps(cache.get('diff_module_map'))
+
+
+    all_files = porcelain.ls_files(rep)
     state_map = {}
     diff_module_map = {}
-    modules_repo = Repo(git_folder + '/terraform-cognite-modules')
+
 
     utils.set_state_map(state_map, all_files, lastfcommit)
 
@@ -53,6 +65,9 @@ def github():
 
                 utils.set_diff_module_map(equinor_commit, greenfield_commit, folder_path,
                                     module, full_module_path, subpath_commits, diff_module_map)
+    cache.set('diff_module_map', diff_module_map)
+    cache.set(lastfcommit, True)
+    cache.set(lastfcommit_modules, True)
     #print(diff_module_map, file=sys.stdout)
     return json.dumps(diff_module_map)
     # app.logger.info(diff_module_map)
