@@ -1,11 +1,7 @@
 import re
 from dulwich.repo import Repo, Commit
 from dulwich.object_store import tree_lookup_path
-from kaknas import app
-
-def get_repo():
-    rep = Repo(app.config['GIT_REPOS_FOLDER'] + '/terraform')
-    return rep
+from flask import current_app as app
 
 def get_file_contents(tree, path):
     """Gets contents of a file.
@@ -17,7 +13,8 @@ def get_file_contents(tree, path):
     Returns:
         A string containing all contents of the file
     """
-    rep = get_repo()
+    app_config = app.config['GIT_REPOS_FOLDER']
+    rep = Repo(app_config + '/terraform')
     (mode,sha) = tree_lookup_path(rep.get_object, tree, path)
     return rep[sha].data.decode()
 

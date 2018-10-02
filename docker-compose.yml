@@ -9,6 +9,7 @@ services:
     environment:
       - GIT_SSH_COMMAND=ssh -i /app/cognite-cicd.pem -o 'StrictHostKeyChecking no'
       - GIT_REPOS_FOLDER=/app
+      - CC=gcc
     volumes:
      - .:/kaknas
      - ./cognite-cicd.pem:/app/cognite-cicd.pem

@@ -1,9 +1,9 @@
+from flask import current_app as app
 from kaknas.utils import utils
+from kaknas.cache import cache
 from dulwich import porcelain
 from dulwich.repo import Repo
 import sys
-from kaknas import app
-from kaknas import cache
 import json
 import os
 
@@ -19,7 +19,6 @@ def github():
     lastfcommit_modules = next(iter(repowlkr_modules)).commit
 
     if cache.get(lastfcommit) and cache.get(lastfcommit_modules) and cache.get('diff_module_map') is not None:
-        app.logger.info('cache hit')
         return json.dumps(cache.get('diff_module_map'))
 
 

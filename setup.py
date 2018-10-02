@@ -38,8 +38,8 @@ def install():
             'Flask-SQLAlchemy==2.1',
             'mysqlclient==1.3.9',
             'requests==2.19.1',
+            'Flask-Caching=1.4.0',
             'dulwich --global-option=--pure',
-            'Flask-Caching=1.4.0'
         ],
     )
 

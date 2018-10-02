@@ -1,23 +1,26 @@
-FROM python:3.6-alpine
+FROM python:3.7-alpine
 
 MAINTAINER Zach Yam "zach.yam@cognite.com"
 
-#Install git
 RUN apk add curl git unzip bash openssh
+
+#Install uWSGI server
+RUN apk add --no-cache --virtual .build-deps \
+        gcc \
+        libc-dev \
+        linux-headers; \
+    pip install uwsgi; \
+    apk del .build-deps;
 
 COPY kaknas /app/kaknas
 
-COPY manager.py /app/
-
-COPY setup.py /app/
-
 COPY requirements.txt /app/
+
+COPY entrypoint.sh /app/
 
 WORKDIR /app
 
 #Install requirements
 RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "python3" ]
-
-CMD [ "manager.py", "runserver" ]
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]
