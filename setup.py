@@ -40,7 +40,8 @@ def install():
             'requests==2.19.1',
             'Flask-Caching=1.4.0',
             'dulwich --global-option=--pure',
-            'Flask-APScheduler==1.6.0'
+            'apscheduler==3.5.3',
+            'Flask-APScheduler==1.6.0',
         ],
     )
 
