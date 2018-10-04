@@ -44,7 +44,7 @@ def github():
                 if folder_path in state_map['cognitedata-equinor']:
                     if module in state_map['cognitedata-equinor'][folder_path]:
                         equinor_commit = utils.get_commit_in_subpath(state_map['cognitedata-equinor'][folder_path][module][full_module_path],
-                                                            all_commits, subpath_commits)
+                                                                     all_commits, subpath_commits)
                     else:
                         # raise a flag if module appears in greenfield but not in equinor
                         diff_module_map[folder_path][module] = module + ' module not found in Equinor'
