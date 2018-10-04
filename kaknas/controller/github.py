@@ -1,6 +1,5 @@
 from flask import current_app as app
 from kaknas.utils import utils
-from kaknas.cache import cache
 from dulwich import porcelain
 from dulwich.repo import Repo
 import sys
@@ -18,14 +17,9 @@ def github():
     repowlkr_modules = modules_repo.get_walker(max_entries=1)
     lastfcommit_modules = next(iter(repowlkr_modules)).commit
 
-    if cache.get(lastfcommit) and cache.get(lastfcommit_modules) and cache.get('diff_module_map') is not None:
-        return json.dumps(cache.get('diff_module_map'))
-
-
     all_files = porcelain.ls_files(rep)
     state_map = {}
     diff_module_map = {}
-
 
     utils.set_state_map(state_map, all_files, lastfcommit)
 
@@ -64,10 +58,5 @@ def github():
 
                 utils.set_diff_module_map(equinor_commit, greenfield_commit, folder_path,
                                     module, full_module_path, subpath_commits, diff_module_map)
-    cache.set('diff_module_map', diff_module_map)
-    cache.set(lastfcommit, True)
-    cache.set(lastfcommit_modules, True)
-    #print(diff_module_map, file=sys.stdout)
     return json.dumps(diff_module_map)
     # app.logger.info(diff_module_map)
-    # return 'Check terminal'
