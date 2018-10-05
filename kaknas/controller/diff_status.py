@@ -7,7 +7,7 @@ import json
 import os
 
 @cache.cached(timeout=60, key_prefix='diff_module_map')
-def github():
+def diff_status():
     # get latest commits of repos
     git_folder = app.config['GIT_REPOS_FOLDER']
     rep = Repo(git_folder + '/terraform/')
