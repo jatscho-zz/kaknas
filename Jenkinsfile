@@ -1,6 +1,6 @@
 @Library('jenkins-helpers@v0.1.13') _
 
-def label = "python-terraform-${UUID.randomUUID().toString()}"
+def label = "kaknas-${UUID.randomUUID().toString()}"
 
 podTemplate(
     label: label,

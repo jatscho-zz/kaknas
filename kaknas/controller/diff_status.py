@@ -1,13 +1,13 @@
 from flask import current_app as app
-from kaknas.utils import utils
-from kaknas.cache import cache
+from kaknas.utils import diff_utils
 from dulwich import porcelain
 from dulwich.repo import Repo
-import sys
+from kaknas.app import cache
 import json
 import os
 
-def github():
+@cache.cached(timeout=60, key_prefix='diff_module_map')
+def diff_status():
     # get latest commits of repos
     git_folder = app.config['GIT_REPOS_FOLDER']
     rep = Repo(git_folder + '/terraform/')
@@ -18,16 +18,11 @@ def github():
     repowlkr_modules = modules_repo.get_walker(max_entries=1)
     lastfcommit_modules = next(iter(repowlkr_modules)).commit
 
-    if cache.get(lastfcommit) and cache.get(lastfcommit_modules) and cache.get('diff_module_map') is not None:
-        return json.dumps(cache.get('diff_module_map'))
-
-
     all_files = porcelain.ls_files(rep)
     state_map = {}
     diff_module_map = {}
 
-
-    utils.set_state_map(state_map, all_files, lastfcommit)
+    diff_utils.set_state_map(state_map, all_files, lastfcommit)
 
     # For now, we are comparing everything against Greenfield. We assume Greenfield is the most up to date project
     for folder_path, modules in state_map['cognitedata-greenfield'].items():
@@ -43,14 +38,14 @@ def github():
                 all_commits = []
                 subpath_commits = []
 
-                utils.create_all_commits_list(iterator, all_commits)
-                utils.create_subpath_commits_list(iterator_subpath, subpath_commits)
+                diff_utils.create_all_commits_list(iterator, all_commits)
+                diff_utils.create_subpath_commits_list(iterator_subpath, subpath_commits)
 
-                greenfield_commit = utils.get_commit_in_subpath(git_ref, all_commits, subpath_commits)
+                greenfield_commit = diff_utils.get_commit_in_subpath(git_ref, all_commits, subpath_commits)
                 if folder_path in state_map['cognitedata-equinor']:
                     if module in state_map['cognitedata-equinor'][folder_path]:
-                        equinor_commit = utils.get_commit_in_subpath(state_map['cognitedata-equinor'][folder_path][module][full_module_path],
-                                                            all_commits, subpath_commits)
+                        equinor_commit = diff_utils.get_commit_in_subpath(state_map['cognitedata-equinor'][folder_path][module][full_module_path],
+                                                                     all_commits, subpath_commits)
                     else:
                         # raise a flag if module appears in greenfield but not in equinor
                         diff_module_map[folder_path][module] = module + ' module not found in Equinor'
@@ -62,12 +57,8 @@ def github():
                     # raise a flag if equinor's git ref is invalid
                     continue
 
-                utils.set_diff_module_map(equinor_commit, greenfield_commit, folder_path,
+                diff_utils.set_diff_module_map(equinor_commit, greenfield_commit, folder_path,
                                     module, full_module_path, subpath_commits, diff_module_map)
     cache.set('diff_module_map', diff_module_map)
-    cache.set(lastfcommit, True)
-    cache.set(lastfcommit_modules, True)
-    #print(diff_module_map, file=sys.stdout)
     return json.dumps(diff_module_map)
     # app.logger.info(diff_module_map)
-    # return 'Check terminal'
