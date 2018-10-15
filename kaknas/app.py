@@ -62,5 +62,5 @@ if not os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
 # Create a scheduler to check latest commit every minute
 scheduler = BackgroundScheduler(timezone=utc)
-# scheduler.add_job(check_latest_commit, 'interval', minutes=1)
-# scheduler.start()
+scheduler.add_job(check_latest_commit, 'interval', minutes=1)
+scheduler.start()
