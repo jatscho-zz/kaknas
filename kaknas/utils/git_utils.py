@@ -1,6 +1,9 @@
 import subprocess
 import os
+from dulwich.repo import Repo
+from dulwich import porcelain
 from kaknas.app import cache
+from kaknas.utils import diff_utils
 
 def git(*args):
     """Wrapper function that uses the git command line and returns the output
@@ -45,3 +48,15 @@ def set_latest_commit_cache(repo_path):
     os.chdir(repo_path)
     current_commit = git("rev-parse", "HEAD")
     cache.set(repo_path+'_current_commit', current_commit)
+
+def get_latest_commits(git_folder, module_state_map):
+    rep = Repo(git_folder + '/terraform/')
+    repowlkr = rep.get_walker(max_entries=1)
+    lastfcommit = next(iter(repowlkr)).commit
+    all_files = porcelain.ls_files(rep)
+    module_state_map = cache.get('module_state_map')
+    if module_state_map is None:
+        module_state_map = {}
+        diff_utils.set_module_state_map(module_state_map, all_files, lastfcommit)
+    cache.set('module_state_map', module_state_map)
+    return module_state_map
