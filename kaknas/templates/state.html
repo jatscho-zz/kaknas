@@ -1,0 +1,55 @@
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Kaknas</title>
+  <meta name="description" content="Kaknas">
+  <style>
+      #projects {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      #projects td, #projects th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      #projects tr:nth-child(even){background-color: #f2f2f2;}
+
+      #projects tr:hover {background-color: #ddd;}
+
+      #projects th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+      }
+  </style>
+</head>
+
+<body>
+  <section>
+  </section>
+
+  <table id="projects">
+    <tr id="projectTitles">
+      <th> Module </th>
+      <th> Module Path</th>
+      <th> Equinor </th>
+      <th> Greenfield </th>
+      <th> West1-1 </th>
+    </tr>
+
+  </table>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="/static/js/index.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function(event) {
+    var module_state_map = JSON.parse('{{ module_state_map | tojson | safe }}');
+    populateModuleInfo(module_state_map);
+  });
+  </script>
+</body>
+</html>

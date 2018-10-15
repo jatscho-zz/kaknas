@@ -28,7 +28,7 @@ def find_modules_in_file(file, lastfcommit):
     Returns:
         A nested map containing the key value pairs of modules found in the file.
         For instance, {'skids': {'cybertron/skids': '69ab0e5'}} means that the
-        skids.tf file contains one module with the name cybertron/skids pointing
+        file contains one module with the name cybertron/skids pointing
         to the git ref number 69ab0e5
     """
     file_contents = get_file_contents(lastfcommit.tree, file)
@@ -117,6 +117,86 @@ def set_state_map(state_map, all_files, lastfcommit):
             modules_map = find_modules_in_file(file, lastfcommit)
             # state_map[project][folder_path] = {**state_map[project][folder_path], **modules_map}
             state_map[project][folder_path].update(modules_map)
+
+
+def set_module_state_map(module_state_map, all_files, lastfcommit):
+    """Creates a map of the state of all modules, their projects and paths.
+
+    Args:
+        module_state_map: An empty map
+        all_files: A tree of all files in the repo
+        lastfcommit: The latest Commit of the repo
+
+    Returns:
+        None, but sets state_map to be something like this:
+        {
+          "file-storage": {
+            "tier1/file-storage": {
+              "cognitedata-greenfield": {
+                "cdp/tier1/file-storage": "998de30"
+              },
+              "cognitedata-equinor": {
+                "cdp/tier1/file-storage": "998de30"
+              }
+            }
+          },
+          "gcp_project": {
+            "gcp_project": {
+              "cognitedata-greenfield": {
+                "cdp/gcp_project": "fec550d"
+              },
+              "cognitedata-equinor": {
+                "cdp/gcp_project": "ef882b3"
+              },
+              "cognitedata-europe-west1-1": {
+                "cdp/gcp_project": "fec550d"
+              }
+            }
+          },
+          "search_loader": {
+            "cognite_search/loader": {
+              "cognitedata-development": {
+                "cdp/tier2/search/loader": "192f973"
+              },
+              "cognitedata-test": {
+                "cognite_search/loader": "bc5494b"
+              },
+              "cognitedata-production": {
+                "cdp/tier2/search/loader": "192f973"
+              }
+            },
+            "tier2/search/loader": {
+              "cognitedata-greenfield": {
+                "cdp/tier2/search/loader": "192f973"
+              },
+              "cognitedata-equinor": {
+                "cdp/tier2/search/loader": "192f973"
+              },
+              "cognitedata-europe-west1-1": {
+                "cdp/tier2/search/loader": "192f973"
+              }
+            }
+          }
+        }
+
+    """
+    for file in all_files:
+        file_decoded = file.decode()
+        if file.endswith(b'.tf'):
+            file_split = file_decoded.split('/')
+            project = file_split[0]
+            folder_path = get_folder_path(file_decoded)
+            modules_map = find_modules_in_file(file, lastfcommit)
+            for module, module_info in modules_map.items():
+                if module not in module_state_map:
+                    module_state_map[module] = {}
+                if folder_path not in module_state_map[module]:
+                    module_state_map[module][folder_path] = {}
+                if project not in module_state_map[module][folder_path]:
+                    module_state_map[module][folder_path][project] = {}
+                for module_path in module_info:
+                    if module_path not in module_state_map[module][folder_path][project]:
+                        module_state_map[module][folder_path][project] = module_info
 
 def get_commit_in_subpath(module_git_ref, all_commits, subpath_commits):
     """Gets Commit that the git_ref sha is pointing to
