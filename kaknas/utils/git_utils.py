@@ -49,7 +49,19 @@ def set_latest_commit_cache(repo_path):
     current_commit = git("rev-parse", "HEAD")
     cache.set(repo_path+'_current_commit', current_commit)
 
+@cache.cached(timeout=600, key_prefix='module_state_map')
 def get_latest_commits(git_folder, module_state_map):
+    """Gets latest commit in /terraform and sets module_state_map
+
+    Args:
+        git_folder: A string of the repo path
+        module_state_map: An empty map
+
+    Returns:
+        A nested dictionary of all terraform modules being used by all projects,
+        path name within that project and path to that specific module.
+        See diff_utils.set_module_state_map for example
+    """
     rep = Repo(git_folder + '/terraform/')
     repowlkr = rep.get_walker(max_entries=1)
     lastfcommit = next(iter(repowlkr)).commit
