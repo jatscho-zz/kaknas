@@ -18,8 +18,6 @@ COPY requirements.txt /app/
 
 COPY entrypoint.sh /app/
 
-COPY cognite-cicd.pem /app/cognite-cicd.pem
-
 WORKDIR /app
 
 #Install requirements
