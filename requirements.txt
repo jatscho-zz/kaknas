@@ -7,3 +7,4 @@ requests==2.19.1
 apscheduler==3.5.3
 Flask-APScheduler==1.6.0
 dulwich --global-option=--pure
+Flask-Cors==3.0.6

@@ -180,6 +180,7 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
         }
 
     """
+    count = 0
     for file in all_files:
         file_decoded = file.decode()
         if file.endswith(b'.tf'):
@@ -188,15 +189,41 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
             folder_path = get_folder_path(file_decoded)
             modules_map = find_modules_in_file(file, lastfcommit)
             for module, module_info in modules_map.items():
-                if module not in module_state_map:
-                    module_state_map[module] = {}
-                if folder_path not in module_state_map[module]:
-                    module_state_map[module][folder_path] = {}
-                if project not in module_state_map[module][folder_path]:
-                    module_state_map[module][folder_path][project] = {}
-                for module_path in module_info:
-                    if module_path not in module_state_map[module][folder_path][project]:
-                        module_state_map[module][folder_path][project] = module_info
+                module_map_info_obj = None
+                for id in module_state_map:
+                    if module_state_map[id]["module_name"] == module:
+                        module_map_info_obj = module_state_map[id]
+                if module_map_info_obj:
+                    # module already exists. add new project where module is found
+                    if project not in module_map_info_obj:
+                        module_map_info_obj[project] = {}
+                    for module_source in module_info:
+                        module_map_info_obj[project]["path_to_module"] = folder_path
+                        module_map_info_obj[project]["module_source"] = module_source
+                        module_map_info_obj[project]["git_ref"] = module_info[module_source]
+                else:
+                    # add new module to map
+                    module_state_map[count] = {}
+                    module_state_map[count]["module_name"] = module
+                    for module_source in module_info:
+                        module_state_map[count][project] = {}
+                        module_state_map[count][project]["path_to_module"] = folder_path
+                        module_state_map[count][project]["module_source"] = module_source
+                        module_state_map[count][project]["git_ref"] = module_info[module_source]
+                count += 1
+
+                #
+                # if module not in module_state_map:
+                #     module_state_map[module] = {}
+                # module_state_map[module]["module_name"] = module
+                # if project not in module_state_map[module]:
+                #     module_state_map[module][project] = {}
+                # if folder_path not in module_state_map[module][project]:
+                #     module_state_map[module][project]["path_to_module"] = folder_path
+                # for module_source in module_info:
+                #     if module_source not in module_state_map[module][project]:
+                #         module_state_map[module][project]["module_source"] = module_source
+                #         module_state_map[module][project]["git_ref"] = module_info[module_source]
 
 def get_commit_in_subpath(module_git_ref, all_commits, subpath_commits):
     """Gets Commit that the git_ref sha is pointing to
@@ -256,44 +283,63 @@ def create_subpath_commits_list(iterator_subpath, subpath_commits):
         else:
             subpath_commits.append(lastfcommit)
 
-def set_diff_module_map(equinor_commit, greenfield_commit, folder_path, module,
-                        full_module_path, subpath_commits, diff_module_map):
-    """Compares the git refs of modules in both Greenfield and Equinor. If the module
+def set_diff_module_map(project_commit, project, greenfield_commit, folder_path, module,
+                        full_module_path, subpath_commits, diff_module_map, count):
+    """Compares the git refs of modules in Greenfield and other projects. If the module
        points to different sha commits, we identify and add them to diff_module_map
 
     Args:
-        equinor_commit: Commit object in Equinor
+        project_commit: Commit object in project that is NOT Greenfield
+        project: Project of project_commit
         greenfield_commit: Commit object in Greenfield
         folder_path: A string containing the path to the module
         module: A string containing the module name
         full_module_path: A string containing the path to the module, including the project
         subpath_commits: A list of the Commits in the subpath of folder_path
-        diff_module_map: A map containing the diffs of modules between Greenfield and Equinor
+        diff_module_map: A map containing the diffs of modules between Greenfield and all other projects
+        count: An integer that acts as a key id for diff_module_map
 
     Returns:
         None
     """
-    if equinor_commit != greenfield_commit:
-        if folder_path not in diff_module_map:
-            diff_module_map[folder_path] = {}
-        if module not in diff_module_map[folder_path]:
-            diff_module_map[folder_path][module] = {}
-        if full_module_path not in diff_module_map[folder_path][module]:
-            diff_module_map[folder_path][module][full_module_path] = {}
-            first_commit = None
-            second_commit = None
-            for commit in subpath_commits:
-                if commit.id == equinor_commit.id:
-                    if first_commit is None:
-                        first_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['first_commit'] = {'equinor': commit.id.decode()}
-                    else:
-                        second_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['second_commit'] = {'equinor': commit.id.decode()}
-                if  commit.id == greenfield_commit.id:
-                    if first_commit is None:
-                        first_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['first_commit'] = {'greenfield': commit.id.decode()}
-                    else:
-                        second_commit = commit
-                        diff_module_map[folder_path][module][full_module_path]['second_commit'] = {'greenfield': commit.id.decode()}
+    if project_commit != greenfield_commit:
+        diff_module_map[count] = {}
+        diff_module_map[count]["module_name"] = module
+        diff_module_map[count][project] = {}
+        diff_module_map[count][project]["path_to_module"] = folder_path
+        diff_module_map[count][project]["module_source"] = full_module_path
+        newer_commit = None
+        older_commit = None
+        for commit in subpath_commits:
+            if commit.id == project_commit.id:
+                if newer_commit is None:
+                    newer_commit = commit
+                    diff_module_map[count][project]["newer_commit"] = commit.id.decode()
+                else:
+                    older_commit = commit
+                    diff_module_map[count][project]["older_commit"] = commit.id.decode()
+
+
+        # if folder_path not in diff_module_map:
+        #     diff_module_map[folder_path] = {}
+        # if module not in diff_module_map[folder_path]:
+        #     diff_module_map[folder_path][module] = {}
+        # if full_module_path not in diff_module_map[folder_path][module]:
+        #     diff_module_map[folder_path][module][full_module_path] = {}
+        #     latest_commit = None
+        #     old_commit = None
+        #     for commit in subpath_commits:
+        #         if commit.id == project_commit.id:
+        #             if latest_commit is None:
+        #                 latest_commit = commit
+        #                 diff_module_map[folder_path][module][full_module_path]['latest_commit'] = {project_commit: commit.id.decode()}
+        #             else:
+        #                 old_commit = commit
+        #                 diff_module_map[folder_path][module][full_module_path]['old_commit'] = {project_commit: commit.id.decode()}
+        #         if  commit.id == greenfield_commit.id:
+        #             if latest_commit is None:
+        #                 latest_commit = commit
+        #                 diff_module_map[folder_path][module][full_module_path]['latest_commit'] = {'greenfield': commit.id.decode()}
+        #             else:
+        #                 old_commit = commit
+        #                 diff_module_map[folder_path][module][full_module_path]['old_commit'] = {'greenfield': commit.id.decode()}

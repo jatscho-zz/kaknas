@@ -5,6 +5,8 @@ from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from kaknas.utils import git_utils
 from pytz import utc
+from flask_cors import CORS
+
 
 __copyright__ = "Copyright 2017, luavis"
 __credits__ = ["luavis", ]
@@ -14,6 +16,8 @@ __status__ = "Development"
 
 
 app = Flask(__name__, static_url_path='/static')
+cors = CORS(app, resources={r"*": {"origins": "*"}})
+
 cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 
 if os.environ.get('GIT_REPOS_FOLDER') is not None:
