@@ -208,6 +208,7 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
                     for module_source in module_info:
                         module_state_map[count][project] = {}
                         module_state_map[count][project]["path_to_module"] = folder_path
+                        module_state_map[count]["module_source"] = module_source
                         module_state_map[count][project]["module_source"] = module_source
                         module_state_map[count][project]["git_ref"] = module_info[module_source]
                 count += 1

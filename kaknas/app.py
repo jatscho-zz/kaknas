@@ -23,7 +23,7 @@ cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 if os.environ.get('GIT_REPOS_FOLDER') is not None:
     app.config['GIT_REPOS_FOLDER'] = os.environ.get('GIT_REPOS_FOLDER')
 else:
-    app.config['GIT_REPOS_FOLDER'] = '/app'
+    app.config['GIT_REPOS_FOLDER'] = 'repos'
 if os.environ.get('FLASK_CONFIG') is not None:
     app.config.from_object('kaknas.config.%s' % os.environ['FLASK_CONFIG'])
 else:
@@ -54,17 +54,17 @@ def check_latest_commit():
     git_utils.compare_and_pull(app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules')
 
 # hack to make Flask run once
-if not os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    # git pull both repos
-    terraform_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform'
-    git_utils.git("clone", "git@github.com:cognitedata/terraform.git", terraform_repo_path)
-    git_utils.set_latest_commit_cache(terraform_repo_path)
-
-    terraform_modules_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules'
-    git_utils.git("clone", "git@github.com:cognitedata/terraform-cognite-modules.git", terraform_modules_repo_path)
-    git_utils.set_latest_commit_cache(terraform_modules_repo_path)
+# if not os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+#     # git pull both repos
+#     terraform_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform'
+#     git_utils.git("clone", "git@github.com:cognitedata/terraform.git", terraform_repo_path)
+#     git_utils.set_latest_commit_cache(terraform_repo_path)
+#
+#     terraform_modules_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules'
+#     git_utils.git("clone", "git@github.com:cognitedata/terraform-cognite-modules.git", terraform_modules_repo_path)
+#     git_utils.set_latest_commit_cache(terraform_modules_repo_path)
 
 # Create a scheduler to check latest commit every minute
-scheduler = BackgroundScheduler(timezone=utc)
-scheduler.add_job(check_latest_commit, 'interval', minutes=1)
-scheduler.start()
+# scheduler = BackgroundScheduler(timezone=utc)
+# scheduler.add_job(check_latest_commit, 'interval', minutes=1)
+# scheduler.start()
