@@ -52,7 +52,7 @@ def diff_status():
                                 project_commit = diff_utils.get_commit_in_subpath(state_map[project][folder_path][module][full_module_path],
                                                                              all_commits, subpath_commits)
                             else:
-                                app.logger.info('hi')
+                                continue
                                 # raise a flag if module appears in greenfield but not in equinor
                                 # diff_module_map[count] = {}
                                 # diff_module_map[count]["module_name"] = module
@@ -60,7 +60,7 @@ def diff_status():
                                 # diff_module_map[count][project]["path_to_module"] = module + ' module not found in ' + project
 
                         else:
-                            app.logger.info('hi')
+                            continue
                             # raise a flag if path appear in greenfield but not in equinor
                             # diff_module_map[count] = {}
                             # diff_module_map[count]["module_name"] = module

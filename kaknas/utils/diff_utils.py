@@ -211,7 +211,7 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
                         module_state_map[count]["module_source"] = module_source
                         module_state_map[count][project]["module_source"] = module_source
                         module_state_map[count][project]["git_ref"] = module_info[module_source]
-                count += 1
+                    count += 1
 
                 #
                 # if module not in module_state_map:
