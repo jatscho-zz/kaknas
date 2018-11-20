@@ -23,7 +23,9 @@ def state():
         new_module_obj["id"] = key
         for item_info_key, item_info_val in value.items():
             new_module_obj[item_info_key] = item_info_val
+
         ret["data"].append(new_module_obj)
+
 
     ret["sorted_modules_keys"].append(sorted_module_source_list)
     ret["reversed_modules_keys"].append(reverse_sorted_module_source_list)

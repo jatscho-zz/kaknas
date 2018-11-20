@@ -211,7 +211,13 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
                         module_state_map[count]["module_source"] = module_source
                         module_state_map[count][project]["module_source"] = module_source
                         module_state_map[count][project]["git_ref"] = module_info[module_source]
+                        #if project == 'cognitedata-greenfield':
+                            #module_state_map[count]["module_source"] = module_info['cognitedata-greenfield']['module_source']
                     count += 1
+    # set module source to be the one Greenfield points to
+    for key, module_info in module_state_map.items():
+        if 'cognitedata-greenfield' in module_info:
+            module_state_map[key]["module_source"] = module_info["cognitedata-greenfield"]["module_source"]
 
                 #
                 # if module not in module_state_map:
@@ -225,6 +231,7 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
                 #     if module_source not in module_state_map[module][project]:
                 #         module_state_map[module][project]["module_source"] = module_source
                 #         module_state_map[module][project]["git_ref"] = module_info[module_source]
+
 
 def get_commit_in_subpath(module_git_ref, all_commits, subpath_commits):
     """Gets Commit that the git_ref sha is pointing to
