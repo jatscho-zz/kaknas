@@ -71,38 +71,57 @@ def set_state_map(state_map, all_files, lastfcommit):
 
     Returns:
         None, but sets state_map to be something like this:
-        {
-            "cognitedata-greenfield": {
-                "gcp_project": {
-                    "gcp_project": {
-                        "cdp/gcp_project": "fec550d"
+        "{
+            'cognitedata-development': {
+                '3d/3d-backend': {
+                    '3d': {
+                        '3d/3d-backend': 'd3af6d7'
+                        }
+                },
+                'cybertron/jetfire': {
+                    'jetfire': {
+                        'cybertron/jetfire': '673edc0'
                     }
                 },
-                "project_vars": {},
-                "tier0/iam": {
-                    "iam": {
-                        "cdp/tier0/iam": "a836bdf"
+                'cybertron/skids': {
+                    'skids': {
+                        'cybertron/skids': '69ab0e5'
                     }
-                }
+                },
             },
-            "cognitedata-equinor": {
-                "gcp_project": {
-                    "gcp_project": {
-                        "cdp/gcp_project": "ef882b3"
+            'cognitedata-equinor': {
+                'gcp_project': {
+                    'gcp_project': {
+                        'cdp/gcp_project': 'ef882b3'
+                        }
                     },
-                    "gcp_project_2": {
-                        "cdp/gcp_project": "1234"
+                'project_vars': {},
+                'tier0/iam': {
+                    'iam': {
+                        'cdp/tier0/iam': '9dd40c3'
                     }
                 },
-                "project_vars": {},
-                "tier0/iam": {
-                    "iam": {
-                        "cdp/tier0/iam": "a836bdf"
+            }
+            'cognitedata-europe-west1-1': {
+                'gcp_project': {
+                    'gcp_project': {
+                        'cdp/gcp_project': 'fec550d'
+                    }
+                },
+            },
+            'cognitedata-greenfield': {
+                'gcp_project': {
+                    'gcp_project': {
+                        'cdp/gcp_project': 'fec550d'
+                    }
+                },
+                'tier0/iam': {
+                    'iam': {
+                        'cdp/tier0/iam': '9dd40c3'
                     }
                 }
             }
         }
-
     """
     for file in all_files:
         file_decoded = file.decode()
@@ -115,9 +134,7 @@ def set_state_map(state_map, all_files, lastfcommit):
             if folder_path not in state_map[project]:
                 state_map[project][folder_path] = {}
             modules_map = find_modules_in_file(file, lastfcommit)
-            # state_map[project][folder_path] = {**state_map[project][folder_path], **modules_map}
             state_map[project][folder_path].update(modules_map)
-
 
 def set_module_state_map(module_state_map, all_files, lastfcommit):
     """Creates a map of the state of all modules, their projects and paths.
@@ -129,56 +146,35 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
 
     Returns:
         None, but sets state_map to be something like this:
-        {
-          "file-storage": {
-            "tier1/file-storage": {
-              "cognitedata-greenfield": {
-                "cdp/tier1/file-storage": "998de30"
-              },
-              "cognitedata-equinor": {
-                "cdp/tier1/file-storage": "998de30"
-              }
-            }
-          },
-          "gcp_project": {
-            "gcp_project": {
-              "cognitedata-greenfield": {
-                "cdp/gcp_project": "fec550d"
-              },
-              "cognitedata-equinor": {
-                "cdp/gcp_project": "ef882b3"
-              },
-              "cognitedata-europe-west1-1": {
-                "cdp/gcp_project": "fec550d"
-              }
-            }
-          },
-          "search_loader": {
-            "cognite_search/loader": {
-              "cognitedata-development": {
-                "cdp/tier2/search/loader": "192f973"
-              },
-              "cognitedata-test": {
-                "cognite_search/loader": "bc5494b"
-              },
-              "cognitedata-production": {
-                "cdp/tier2/search/loader": "192f973"
-              }
+        { 0:
+            {'module_name': '3d',
+             'cognitedata-development':
+                {'path_to_module': '3d/3d-backend',
+                 'module_source': '3d/3d-backend',
+                 'git_ref': 'd3af6d7'
+                },
+             'module_source': '3d/3d-backend'
+             },
+          1:
+            {'module_name': 'ml_api',
+             'cognitedata-development':
+                {'path_to_module': 'cognite_data_platform/ml_api',
+                 'module_source': 'cdp/ml-api',
+                 'git_ref': '2b4d805'
+                },
+             'module_source': 'cdp/ml-api',
+             'cognitedata-production':
+                {'path_to_module': 'cognite_data_platform/ml_api',
+                 'module_source': 'cdp/ml-api',
+                 'git_ref': '2b4d805'
+                },
+             'cognitedata-test':
+                {'path_to_module': 'cognite_data_platform/ml_api',
+                 'module_source': 'cdp/ml-api',
+                 'git_ref': '2b4d805'
+                }
             },
-            "tier2/search/loader": {
-              "cognitedata-greenfield": {
-                "cdp/tier2/search/loader": "192f973"
-              },
-              "cognitedata-equinor": {
-                "cdp/tier2/search/loader": "192f973"
-              },
-              "cognitedata-europe-west1-1": {
-                "cdp/tier2/search/loader": "192f973"
-              }
-            }
-          }
         }
-
     """
     count = 0
     for file in all_files:
@@ -211,26 +207,11 @@ def set_module_state_map(module_state_map, all_files, lastfcommit):
                         module_state_map[count]["module_source"] = module_source
                         module_state_map[count][project]["module_source"] = module_source
                         module_state_map[count][project]["git_ref"] = module_info[module_source]
-                        #if project == 'cognitedata-greenfield':
-                            #module_state_map[count]["module_source"] = module_info['cognitedata-greenfield']['module_source']
                     count += 1
     # set module source to be the one Greenfield points to
     for key, module_info in module_state_map.items():
         if 'cognitedata-greenfield' in module_info:
             module_state_map[key]["module_source"] = module_info["cognitedata-greenfield"]["module_source"]
-
-                #
-                # if module not in module_state_map:
-                #     module_state_map[module] = {}
-                # module_state_map[module]["module_name"] = module
-                # if project not in module_state_map[module]:
-                #     module_state_map[module][project] = {}
-                # if folder_path not in module_state_map[module][project]:
-                #     module_state_map[module][project]["path_to_module"] = folder_path
-                # for module_source in module_info:
-                #     if module_source not in module_state_map[module][project]:
-                #         module_state_map[module][project]["module_source"] = module_source
-                #         module_state_map[module][project]["git_ref"] = module_info[module_source]
 
 
 def get_commit_in_subpath(module_git_ref, all_commits, subpath_commits):
@@ -326,28 +307,3 @@ def set_diff_module_map(project_commit, project, greenfield_commit, folder_path,
                 else:
                     older_commit = commit
                     diff_module_map[count][project]["older_commit"] = commit.id.decode()
-
-
-        # if folder_path not in diff_module_map:
-        #     diff_module_map[folder_path] = {}
-        # if module not in diff_module_map[folder_path]:
-        #     diff_module_map[folder_path][module] = {}
-        # if full_module_path not in diff_module_map[folder_path][module]:
-        #     diff_module_map[folder_path][module][full_module_path] = {}
-        #     latest_commit = None
-        #     old_commit = None
-        #     for commit in subpath_commits:
-        #         if commit.id == project_commit.id:
-        #             if latest_commit is None:
-        #                 latest_commit = commit
-        #                 diff_module_map[folder_path][module][full_module_path]['latest_commit'] = {project_commit: commit.id.decode()}
-        #             else:
-        #                 old_commit = commit
-        #                 diff_module_map[folder_path][module][full_module_path]['old_commit'] = {project_commit: commit.id.decode()}
-        #         if  commit.id == greenfield_commit.id:
-        #             if latest_commit is None:
-        #                 latest_commit = commit
-        #                 diff_module_map[folder_path][module][full_module_path]['latest_commit'] = {'greenfield': commit.id.decode()}
-        #             else:
-        #                 old_commit = commit
-        #                 diff_module_map[folder_path][module][full_module_path]['old_commit'] = {'greenfield': commit.id.decode()}

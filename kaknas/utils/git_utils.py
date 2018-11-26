@@ -28,9 +28,7 @@ def compare_and_pull(repo_path):
     """
     latest_commit = git("rev-parse", "HEAD")
     current_commit = cache.get(repo_path)
-    #app.logger.info('current commit ' + current_commit)
     if latest_commit != current_commit:
-        #app.logger.info('currently pulling')
         git("pull")
         cache.set(repo_path, latest_commit)
 

@@ -24,6 +24,7 @@ def diff_status():
 
     diff_utils.set_state_map(state_map, all_files, lastfcommit)
     count = 0
+    
     # For now, we are comparing everything against Greenfield. We assume Greenfield is the most up to date project
     for folder_path, modules in state_map['cognitedata-greenfield'].items():
         for module, module_info in modules.items():
@@ -53,34 +54,16 @@ def diff_status():
 
                             else:
                                 continue
-                                # raise a flag if module appears in greenfield but not in equinor
-                                # diff_module_map[count] = {}
-                                # diff_module_map[count]["module_name"] = module
-                                # diff_module_map[count][project] = {}
-                                # diff_module_map[count][project]["path_to_module"] = module + ' module not found in ' + project
 
                         else:
                             continue
-                            # raise a flag if path appear in greenfield but not in equinor
-                            # diff_module_map[count] = {}
-                            # diff_module_map[count]["module_name"] = module
-                            # diff_module_map[count][project] = {}
-                            # diff_module_map[count][project]["module_source"] = folder_path + ' folder path not found in ' + project
 
                         if project_commit is None:
-                            # raise a flag if equinor's git ref is invalid
                             continue
 
                         diff_utils.set_diff_module_map(project_commit, project, greenfield_commit, folder_path,
                                             module, full_module_path, subpath_commits, diff_module_map, count)
                         count += 1
-    # for key, value in diff_module_map.items():
-    #     new_module_obj = {}
-    #     new_module_obj["id"] = key
-    #     for item_info_key, item_info_val in value.items():
-    #         new_module_obj[item_info_key] = item_info_val
-    #     ret.append(new_module_obj)
 
     cache.set('diff_module_map', diff_module_map)
     return json.dumps(diff_module_map)
-    # app.logger.info(diff_module_map)
