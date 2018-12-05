@@ -90,7 +90,7 @@ podTemplate(
         container('node') {
             stage('Build') {
               dir('kaknas-vue') {
-                sh('npm run install')
+                sh('npm install')
                 sh('npm run build')
                 sh('cp -r dist/* ../kaknas/')
                 sh('mv ../kaknas/index.html ../kaknas/static/')
