@@ -1,2 +1,4 @@
+from flask import current_app as app
+
 def index():
-    return '<h1>It works!</h1>'
+    return app.send_static_file('index.html')

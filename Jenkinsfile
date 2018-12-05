@@ -28,9 +28,6 @@ podTemplate(
             resourceLimitCpu: '1000m',
             resourceLimitMemory: '500Mi',
             envVars: [envVar(key: 'PYTHONPATH', value: '/usr/local/bin'),
-                      secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-search-loader-python', secretKey: 'token.txt'),
-                      // /codecov-script/upload-report.sh relies on the following
-                      // Jenkins and Github environment variables.
                       envVar(key: 'JENKINS_URL', value: env.JENKINS_URL),
                       envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
                       envVar(key: 'BUILD_NUMBER', value: env.BUILD_NUMBER),
@@ -39,6 +36,13 @@ podTemplate(
             ],
             ttyEnabled: true
         ),
+        containerTemplate(name: 'node',
+                         image: 'node:carbon',
+                         resourceRequestCpu: '2000m',
+                         resourceRequestMemory: '2500Mi',
+                         resourceLimitCpu: '2000m',
+                         resourceLimitMemory: '2500Mi',
+                         ttyEnabled: true),
     ],
     volumes: [
         secretVolume(
@@ -82,11 +86,17 @@ podTemplate(
                         ]]
                     ])
             }
-            // stage("Test") {
-            //     sh("pytest --cov-report xml:coverage.xml --cov cognite_search_loader --junitxml=test-report.xml || true")
-            //     junit(allowEmptyResults: true, testResults: '**/test-report.xml')
-            //     summarizeTestResults()
-            // }
+        }
+        container('node') {
+            stage('Build') {
+              dir('kaknas-vue') {
+                sh('npm run install')
+                sh('npm run build')
+                sh('cp -r dist/* ../kaknas/')
+                sh('mv ../kaknas/index.html ../kaknas/static/')
+              }
+
+            }
         }
         container('docker') {
             stage('Build Docker container') {
