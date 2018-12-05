@@ -88,7 +88,7 @@ podTemplate(
             }
         }
         container('node') {
-            stage('Build') {
+            stage('Build vue') {
               dir('kaknas-vue') {
                 sh('npm install')
                 sh('npm run build')
