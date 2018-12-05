@@ -54,15 +54,15 @@ def check_latest_commit():
     git_utils.compare_and_pull(app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules')
 
 # hack to make Flask run once
-# if not os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-#     # git pull both repos
-#     terraform_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform'
-#     git_utils.git("clone", "git@github.com:cognitedata/terraform.git", terraform_repo_path)
-#     git_utils.set_latest_commit_cache(terraform_repo_path)
-#
-#     terraform_modules_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules'
-#     git_utils.git("clone", "git@github.com:cognitedata/terraform-cognite-modules.git", terraform_modules_repo_path)
-#     git_utils.set_latest_commit_cache(terraform_modules_repo_path)
+if not os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    # git pull both repos
+    terraform_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform'
+    git_utils.git("clone", "git@github.com:cognitedata/terraform.git", terraform_repo_path)
+    git_utils.set_latest_commit_cache(terraform_repo_path)
+
+    terraform_modules_repo_path = app.config['GIT_REPOS_FOLDER']+'/terraform-cognite-modules'
+    git_utils.git("clone", "git@github.com:cognitedata/terraform-cognite-modules.git", terraform_modules_repo_path)
+    git_utils.set_latest_commit_cache(terraform_modules_repo_path)
 
 # Create a scheduler to check latest commit every minute
 # scheduler = BackgroundScheduler(timezone=utc)
